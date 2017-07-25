@@ -42,6 +42,14 @@ class ChefsEditTest < ActionDispatch::IntegrationTest
   end
   
   test "redirect edit attempt from non-admin user" do
-    
+    sign_in_as(@chef2, "password")
+    get edit_chef_path(@chef)
+    assert_template "chefs/edit"
+    patch chef_path(@chef), params: { chef: { chefname: "derek1", email: "derek1@example.com" } }
+    assert_redirected_to @chef
+    assert_not flash.empty?
+    @chef.reload
+    assert_match "derek1", @chef.chefname
+    assert_match "derek1@example.com", @chef.email
   end
 end
